@@ -1,0 +1,341 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   Authentic al-itisam.com Bangla Typography (@font-face: SolaimanLipi & Alinur)
+   ============================================================================ */
+@font-face {
+  font-family: 'solaimanlipi';
+  src: url('/fonts/SolaimanLipi.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'solaimanlipi';
+  src: url('/fonts/SolaimanLipi_Bold.ttf') format('truetype');
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'alinur';
+  src: url('/fonts/Li_Alinur_Abakas_Unicode.ttf') format('truetype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-canvas: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-limestone: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --accent-emerald: #0F766E;
+  --accent-bronze: #0284C7;
+  --border-hairline: #E2E8F0;
+  --font-sans: 'solaimanlipi', 'SolaimanLipi', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'solaimanlipi', 'SolaimanLipi', Georgia, serif;
+  --font-display-bn: 'alinur', 'solaimanlipi', 'SolaimanLipi', serif;
+  --font-mono: 'solaimanlipi', 'SolaimanLipi', monospace;
+}
+
+html,
+body {
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-family: 'solaimanlipi', 'SolaimanLipi', sans-serif;
+  letter-spacing: 0.25px;
+  line-height: 1.65;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+strong,
+button,
+input,
+select,
+textarea,
+.font-display,
+.font-editorial,
+.font-serif-bangla,
+.font-bangla {
+  font-family: 'solaimanlipi', 'SolaimanLipi', sans-serif;
+}
+
+.font-alinur {
+  font-family: 'alinur', 'solaimanlipi', 'SolaimanLipi', sans-serif;
+}
+
+.font-mono {
+  font-family: 'solaimanlipi', 'SolaimanLipi', monospace !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+   al-itisam.com Inspired WOW.js + Animate.css Entrance & Text Reveal Keyframes
+   ============================================================================ */
+@keyframes itisamBounceInDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -52px, 0);
+  }
+  60% {
+    opacity: 1;
+    transform: translate3d(0, 12px, 0);
+  }
+  75% {
+    transform: translate3d(0, -6px, 0);
+  }
+  90% {
+    transform: translate3d(0, 3px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes itisamSlideInLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-64px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes itisamSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(64px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes itisamSlideInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 48px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes itisamTextRevealUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes itisamTickerSlide {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  12% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  88% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0);
+  }
+}
+
+@keyframes itisamLineExpand {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.wow-hidden {
+  opacity: 0;
+}
+
+.wow-bounceInDown {
+  animation: itisamBounceInDown 0.85s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+.wow-slideInLeft {
+  animation: itisamSlideInLeft 0.78s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wow-slideInRight {
+  animation: itisamSlideInRight 0.78s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wow-slideInUp {
+  animation: itisamSlideInUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wow-textReveal {
+  animation: itisamTextRevealUp 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.itisam-ticker-item {
+  animation: itisamTickerSlide 4.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Signature al-itisam.com Section Title Rule (grid: auto 1fr auto) */
+.itisam-section-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.itisam-section-line {
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, #0F766E 0%, #0284C7 55%, rgba(203, 213, 225, 0.45) 100%);
+  animation: itisamLineExpand 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ============================================================================
+   Auto Day Mode & Night Mode (Archival Dark Slate & Emerald Night Palette)
+   ============================================================================ */
+html.dark {
+  --bg-canvas: #0B1120;
+  --bg-elevated: #111827;
+  --bg-limestone: #1E293B;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --accent-emerald: #14B8A6;
+  --accent-bronze: #38BDF8;
+  --border-hairline: #334155;
+  color-scheme: dark;
+}
+
+html.dark,
+html.dark body {
+  background-color: #0B1120 !important;
+  color: #F8FAFC !important;
+}
+
+/* Surface overrides in Night Mode */
+html.dark .bg-\[\#F8FAFC\],
+html.dark .bg-\[\#FBF9F5\] {
+  background-color: #0B1120 !important;
+}
+
+html.dark .bg-\[\#FFFFFF\],
+html.dark .bg-white {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-\[\#FFFFFF\]\/95 {
+  background-color: rgba(17, 24, 39, 0.95) !important;
+}
+
+html.dark .bg-\[\#F1F5F9\],
+html.dark .bg-\[\#F1F5F9\]\/70,
+html.dark .bg-\[\#F1F5F9\]\/60,
+html.dark .bg-\[\#F1F5F9\]\/50,
+html.dark .bg-\[\#F1F5F9\]\/40,
+html.dark .bg-\[\#F3EFE6\],
+html.dark .bg-\[\#F3EFE6\]\/70,
+html.dark .bg-\[\#F3EFE6\]\/60,
+html.dark .bg-\[\#F3EFE6\]\/50,
+html.dark .bg-\[\#F3EFE6\]\/40 {
+  background-color: #1E293B !important;
+}
+
+html.dark .bg-\[\#F0FDF4\],
+html.dark .bg-\[\#F0FDF4\]\/60,
+html.dark .bg-\[\#F0FDF4\]\/50,
+html.dark .bg-\[\#F0FDF4\]\/40,
+html.dark .bg-\[\#F0FDF4\]\/30 {
+  background-color: rgba(15, 118, 110, 0.18) !important;
+}
+
+html.dark .bg-\[\#F0F9FF\] {
+  background-color: rgba(2, 132, 199, 0.18) !important;
+}
+
+/* Typography contrast overrides in Night Mode */
+html.dark .text-\[\#0F172A\],
+html.dark .text-\[\#1C1917\] {
+  color: #F8FAFC !important;
+}
+
+html.dark .text-\[\#334155\] {
+  color: #E2E8F0 !important;
+}
+
+html.dark .text-\[\#475569\],
+html.dark .text-\[\#57534E\],
+html.dark .text-\[\#64748B\] {
+  color: #94A3B8 !important;
+}
+
+html.dark .text-\[\#0F766E\],
+html.dark .text-\[\#14532D\] {
+  color: #2DD4BF !important;
+}
+
+html.dark .text-\[\#0284C7\],
+html.dark .text-\[\#92400E\] {
+  color: #38BDF8 !important;
+}
+
+/* Hairline border overrides in Night Mode */
+html.dark .border-\[\#E2E8F0\],
+html.dark .border-\[\#E2E8F0\]\/70,
+html.dark .border-\[\#E5DFD2\],
+html.dark .border-\[\#CBD5E1\] {
+  border-color: #334155 !important;
+}
+
+/* Form inputs, textareas, and selects in Night Mode */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html.dark textarea,
+html.dark select {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748B !important;
+}
+
+html.dark .itisam-section-line {
+  background: linear-gradient(90deg, #14B8A6 0%, #38BDF8 55%, rgba(51, 65, 85, 0.55) 100%);
+}
+

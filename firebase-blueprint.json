@@ -1,0 +1,463 @@
+{
+  "entities": {
+    "PlayerProfile": {
+      "title": "PlayerProfile",
+      "description": "Stores a signed-in draftsman's non-PII career profile, callsign, preferred instrument loadout, and win/loss/streak statistics.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Immutable Firebase Auth UID of the player."
+        },
+        "callsign": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Player's public studio callsign."
+        },
+        "avatarColor": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 16,
+          "pattern": "^#[0-9a-fA-F]{3,8}$",
+          "description": "Hex color accent for the player's studio crest."
+        },
+        "favoritePen": {
+          "type": "string",
+          "enum": [
+            "ballpoint",
+            "gel",
+            "click",
+            "four",
+            "fountain",
+            "marker",
+            "highlighter",
+            "metal"
+          ],
+          "description": "Player's preferred pen instrument ID."
+        },
+        "favoriteInk": {
+          "type": "string",
+          "enum": ["blue", "violet", "green"],
+          "description": "Player's preferred ink trail color."
+        },
+        "played": {
+          "type": "integer",
+          "description": "Total duels completed."
+        },
+        "won": {
+          "type": "integer",
+          "description": "Total duels won."
+        },
+        "lost": {
+          "type": "integer",
+          "description": "Total duels lost."
+        },
+        "draws": {
+          "type": "integer",
+          "description": "Total duels ended in a double ring-out draw."
+        },
+        "streak": {
+          "type": "integer",
+          "description": "Current active win streak."
+        },
+        "bestStreak": {
+          "type": "integer",
+          "description": "Highest career win streak achieved."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable server timestamp when profile was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest profile or match update."
+        }
+      },
+      "required": [
+        "uid",
+        "callsign",
+        "avatarColor",
+        "favoritePen",
+        "favoriteInk",
+        "played",
+        "won",
+        "lost",
+        "draws",
+        "streak",
+        "bestStreak",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MatchLog": {
+      "title": "MatchLog",
+      "description": "Immutable record of a completed Nib & Knock tabletop duel under a player's profile.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the player who recorded this match."
+        },
+        "playerPen": {
+          "type": "string",
+          "enum": [
+            "ballpoint",
+            "gel",
+            "click",
+            "four",
+            "fountain",
+            "marker",
+            "highlighter",
+            "metal"
+          ],
+          "description": "Instrument wielded by Player 1."
+        },
+        "opponentPen": {
+          "type": "string",
+          "enum": [
+            "ballpoint",
+            "gel",
+            "click",
+            "four",
+            "fountain",
+            "marker",
+            "highlighter",
+            "metal"
+          ],
+          "description": "Instrument wielded by the opponent."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["computer", "hotseat"],
+          "description": "Duel mode played."
+        },
+        "arenaLayout": {
+          "type": "string",
+          "enum": ["classic", "bumpers", "fortress"],
+          "description": "Tabletop hazard obstacle layout."
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["win", "loss", "draw"],
+          "description": "Terminal result of the duel."
+        },
+        "shots": {
+          "type": "integer",
+          "description": "Number of flicks taken in the duel."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable server timestamp when the duel concluded."
+        }
+      },
+      "required": [
+        "uid",
+        "playerPen",
+        "opponentPen",
+        "mode",
+        "arenaLayout",
+        "outcome",
+        "shots",
+        "createdAt"
+      ]
+    },
+    "ClientProfile": {
+      "title": "ClientProfile",
+      "description": "Stores an Aether & Form client's non-PII dossier, preferred surface finish, saved wishlist object IDs, and total commission count.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Immutable Firebase Auth UID of the client."
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Client's preferred dossier name or studio alias."
+        },
+        "preferredFinish": {
+          "type": "string",
+          "enum": ["titanium", "obsidian", "brass", "sage"],
+          "description": "Client's preferred architectural surface finish."
+        },
+        "wishlistIds": {
+          "type": "array",
+          "description": "Bounded list (max 10) of saved 3D product IDs."
+        },
+        "orderCount": {
+          "type": "integer",
+          "description": "Total number of serialized commissions placed by this client."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable server timestamp when the client dossier was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest dossier update."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "preferredFinish",
+        "wishlistIds",
+        "orderCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AtelierOrder": {
+      "title": "AtelierOrder",
+      "description": "Serialized architectural object commission and real-time fulfillment telemetry record under a client's dossier.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Immutable Firebase Auth UID of the ordering client."
+        },
+        "orderNumber": {
+          "type": "string",
+          "minLength": 9,
+          "maxLength": 16,
+          "pattern": "^AF-[0-9]{6}$",
+          "description": "Human-readable serialized order reference (e.g., AF-849201)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["placed", "milling", "calibration", "dispatched", "delivered"],
+          "description": "Current fulfillment stage in the Zurich & Kyoto atelier pipeline."
+        },
+        "recipientName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Recipient name for commission calibration dossier."
+        },
+        "destinationCity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Destination city for courier dispatch routing."
+        },
+        "postalCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "description": "Destination postal or routing code."
+        },
+        "trackingCode": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 32,
+          "pattern": "^[A-Z0-9\\-]+$",
+          "description": "Insured armored courier tracking identifier."
+        },
+        "courier": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 48,
+          "description": "Assigned logistics carrier name."
+        },
+        "estimatedDelivery": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Estimated delivery window or completion note."
+        },
+        "primaryProductId": {
+          "type": "string",
+          "enum": [
+            "food-ajwa-01",
+            "food-honey-02",
+            "food-kalojira-03",
+            "food-ghee-04",
+            "food-talbina-05",
+            "food-kacchi-06",
+            "food-olive-07",
+            "food-iftar-08",
+            "fanoos-01",
+            "kufic-mihrab-02",
+            "rehal-03",
+            "mabkhara-04",
+            "tasbih-05",
+            "sajjada-06",
+            "aether-monolith-01",
+            "solstice-orbit-lamp",
+            "chrono-09-skeleton",
+            "valkyrie-planar-hp",
+            "kuro-ultrasonic-vessel",
+            "modula-6-field-synth"
+          ],
+          "description": "Primary catalog product ID in this order."
+        },
+        "primaryFinish": {
+          "type": "string",
+          "enum": ["titanium", "obsidian", "brass", "sage"],
+          "description": "Pack size or jar variant selected for the primary product."
+        },
+        "itemsSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "description": "Formatted summary of ordered food items and pack sizes."
+        },
+        "itemCount": {
+          "type": "integer",
+          "description": "Total number of items in the order (1..99)."
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total settled order amount in BDT."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["card", "cod"],
+          "description": "Settlement method selected at checkout."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Immutable server timestamp when the order was placed."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest fulfillment telemetry update."
+        }
+      },
+      "required": [
+        "uid",
+        "orderNumber",
+        "status",
+        "recipientName",
+        "destinationCity",
+        "postalCode",
+        "trackingCode",
+        "courier",
+        "estimatedDelivery",
+        "primaryProductId",
+        "primaryFinish",
+        "itemsSummary",
+        "itemCount",
+        "total",
+        "paymentMethod",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ProductTelemetry": {
+      "title": "ProductTelemetry",
+      "description": "Dynamic live batch availability, freshness harvest number, and recent order provenance for a Bangla Islamic food product.",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string",
+          "enum": [
+            "food-ajwa-01",
+            "food-honey-02",
+            "food-kalojira-03",
+            "food-ghee-04",
+            "food-talbina-05",
+            "food-kacchi-06",
+            "food-olive-07",
+            "food-iftar-08",
+            "fanoos-01",
+            "kufic-mihrab-02",
+            "rehal-03",
+            "mabkhara-04",
+            "tasbih-05",
+            "sajjada-06",
+            "aether-monolith-01",
+            "solstice-orbit-lamp",
+            "chrono-09-skeleton",
+            "valkyrie-planar-hp",
+            "kuro-ultrasonic-vessel",
+            "modula-6-field-synth"
+          ],
+          "description": "Catalog product identifier."
+        },
+        "stockCount": {
+          "type": "integer",
+          "description": "Remaining billet units in the current production batch (0..500)."
+        },
+        "editionNumber": {
+          "type": "integer",
+          "description": "Latest serialized chassis number allocated (1..5000)."
+        },
+        "leadTimeDays": {
+          "type": "integer",
+          "description": "Current atelier dispatch lead time in days (1..60)."
+        },
+        "lastCommissionedCity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Most recent destination city that commissioned this object."
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the verified client whose commission updated this telemetry."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest telemetry update."
+        }
+      },
+      "required": [
+        "productId",
+        "stockCount",
+        "editionNumber",
+        "leadTimeDays",
+        "lastCommissionedCity",
+        "updatedByUid",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/players/{playerId}": {
+      "schema": { "$ref": "#/entities/PlayerProfile" },
+      "description": "Stores each signed-in player's non-PII studio profile and career statistics, keyed by Firebase Auth UID."
+    },
+    "/players/{playerId}/matches/{matchId}": {
+      "schema": { "$ref": "#/entities/MatchLog" },
+      "description": "Subcollection storing immutable completed duel logs for a player."
+    },
+    "/clients/{clientId}": {
+      "schema": { "$ref": "#/entities/ClientProfile" },
+      "description": "Stores each signed-in Aether & Form client's dossier, saved wishlist, and commission count, keyed by Firebase Auth UID."
+    },
+    "/clients/{clientId}/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/AtelierOrder" },
+      "description": "Subcollection storing serialized commissions and live order tracking telemetry for a client."
+    },
+    "/catalog_telemetry/{productId}": {
+      "schema": { "$ref": "#/entities/ProductTelemetry" },
+      "description": "Dynamic per-product edition telemetry, stock count, and latest commission provenance."
+    }
+  }
+}

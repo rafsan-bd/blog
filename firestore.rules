@@ -1,0 +1,513 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 4.1: Global Safety Net (Default-Deny Catch-All)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Hardened Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidPenId(pen) {
+      return pen is string && pen.size() <= 16 && (
+        pen == 'ballpoint' ||
+        pen == 'gel' ||
+        pen == 'click' ||
+        pen == 'four' ||
+        pen == 'fountain' ||
+        pen == 'marker' ||
+        pen == 'highlighter' ||
+        pen == 'metal'
+      );
+    }
+
+    function isValidInkColor(ink) {
+      return ink is string && ink.size() <= 10 && (
+        ink == 'blue' ||
+        ink == 'violet' ||
+        ink == 'green'
+      );
+    }
+
+    function isValidProductId(pid) {
+      return pid is string && pid.size() >= 1 && pid.size() <= 64 && (
+        pid == 'food-ajwa-01' ||
+        pid == 'food-honey-02' ||
+        pid == 'food-kalojira-03' ||
+        pid == 'food-ghee-04' ||
+        pid == 'food-talbina-05' ||
+        pid == 'food-kacchi-06' ||
+        pid == 'food-olive-07' ||
+        pid == 'food-iftar-08' ||
+        pid == 'fanoos-01' ||
+        pid == 'kufic-mihrab-02' ||
+        pid == 'rehal-03' ||
+        pid == 'mabkhara-04' ||
+        pid == 'tasbih-05' ||
+        pid == 'sajjada-06' ||
+        pid == 'aether-monolith-01' ||
+        pid == 'solstice-orbit-lamp' ||
+        pid == 'chrono-09-skeleton' ||
+        pid == 'valkyrie-planar-hp' ||
+        pid == 'kuro-ultrasonic-vessel' ||
+        pid == 'modula-6-field-synth'
+      );
+    }
+
+    function isValidFinishId(fid) {
+      return fid is string && fid.size() >= 1 && fid.size() <= 16 && (
+        fid == 'titanium' ||
+        fid == 'obsidian' ||
+        fid == 'brass' ||
+        fid == 'sage'
+      );
+    }
+
+    function isValidOrderStatus(st) {
+      return st is string && st.size() >= 1 && st.size() <= 16 && (
+        st == 'placed' ||
+        st == 'milling' ||
+        st == 'calibration' ||
+        st == 'dispatched' ||
+        st == 'delivered'
+      );
+    }
+
+    function isValidOrderTransition(oldStatus, newStatus) {
+      return (oldStatus == 'placed' && newStatus == 'milling') ||
+        (oldStatus == 'milling' && newStatus == 'calibration') ||
+        (oldStatus == 'calibration' && newStatus == 'dispatched') ||
+        (oldStatus == 'dispatched' && newStatus == 'delivered');
+    }
+
+    // Pillar 2: Validation Blueprint for PlayerProfile
+    function isValidPlayerProfile(data) {
+      return data.keys().hasAll([
+        'uid',
+        'callsign',
+        'avatarColor',
+        'favoritePen',
+        'favoriteInk',
+        'played',
+        'won',
+        'lost',
+        'draws',
+        'streak',
+        'bestStreak',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'callsign',
+        'avatarColor',
+        'favoritePen',
+        'favoriteInk',
+        'played',
+        'won',
+        'lost',
+        'draws',
+        'streak',
+        'bestStreak',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid &&
+      data.callsign is string && data.callsign.size() >= 1 && data.callsign.size() <= 32 &&
+      data.avatarColor is string && data.avatarColor.size() >= 4 && data.avatarColor.size() <= 16 && data.avatarColor.matches('^#[0-9a-fA-F]{3,8}$') &&
+      isValidPenId(data.favoritePen) &&
+      isValidInkColor(data.favoriteInk) &&
+      data.played is int && data.played >= 0 && data.played <= 1000000 &&
+      data.won is int && data.won >= 0 && data.won <= 1000000 &&
+      data.lost is int && data.lost >= 0 && data.lost <= 1000000 &&
+      data.draws is int && data.draws >= 0 && data.draws <= 1000000 &&
+      data.streak is int && data.streak >= 0 && data.streak <= 1000000 &&
+      data.bestStreak is int && data.bestStreak >= 0 && data.bestStreak <= 1000000 &&
+      data.bestStreak >= data.streak &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Pillar 2: Validation Blueprint for MatchLog
+    function isValidMatchLog(data) {
+      return data.keys().hasAll([
+        'uid',
+        'playerPen',
+        'opponentPen',
+        'mode',
+        'arenaLayout',
+        'outcome',
+        'shots',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'playerPen',
+        'opponentPen',
+        'mode',
+        'arenaLayout',
+        'outcome',
+        'shots',
+        'createdAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid &&
+      isValidPenId(data.playerPen) &&
+      isValidPenId(data.opponentPen) &&
+      data.mode is string && data.mode.size() <= 12 && (data.mode == 'computer' || data.mode == 'hotseat') &&
+      data.arenaLayout is string && data.arenaLayout.size() <= 12 && (data.arenaLayout == 'classic' || data.arenaLayout == 'bumpers' || data.arenaLayout == 'fortress') &&
+      data.outcome is string && data.outcome.size() <= 8 && (data.outcome == 'win' || data.outcome == 'loss' || data.outcome == 'draw') &&
+      data.shots is int && data.shots >= 1 && data.shots <= 500 &&
+      data.createdAt is timestamp;
+    }
+
+    // Pillar 2: Validation Blueprint for ClientProfile
+    function isValidClientProfile(data) {
+      return data.keys().hasAll([
+        'uid',
+        'displayName',
+        'preferredFinish',
+        'wishlistIds',
+        'orderCount',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'displayName',
+        'preferredFinish',
+        'wishlistIds',
+        'orderCount',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 60 &&
+      isValidFinishId(data.preferredFinish) &&
+      data.wishlistIds is list && data.wishlistIds.size() <= 10 &&
+      (data.wishlistIds.size() == 0 || (data.wishlistIds[0] is string && data.wishlistIds[0].size() >= 1 && data.wishlistIds[0].size() <= 64)) &&
+      data.orderCount is int && data.orderCount >= 0 && data.orderCount <= 10000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Pillar 2: Validation Blueprint for AtelierOrder
+    function isValidAtelierOrder(data) {
+      return data.keys().hasAll([
+        'uid',
+        'orderNumber',
+        'status',
+        'recipientName',
+        'destinationCity',
+        'postalCode',
+        'trackingCode',
+        'courier',
+        'estimatedDelivery',
+        'primaryProductId',
+        'primaryFinish',
+        'itemsSummary',
+        'itemCount',
+        'total',
+        'paymentMethod',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'orderNumber',
+        'status',
+        'recipientName',
+        'destinationCity',
+        'postalCode',
+        'trackingCode',
+        'courier',
+        'estimatedDelivery',
+        'primaryProductId',
+        'primaryFinish',
+        'itemsSummary',
+        'itemCount',
+        'total',
+        'paymentMethod',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid &&
+      data.orderNumber is string && data.orderNumber.size() >= 9 && data.orderNumber.size() <= 16 && data.orderNumber.matches('^AF-[0-9]{6}$') &&
+      isValidOrderStatus(data.status) &&
+      data.recipientName is string && data.recipientName.size() >= 1 && data.recipientName.size() <= 60 &&
+      data.destinationCity is string && data.destinationCity.size() >= 1 && data.destinationCity.size() <= 60 &&
+      data.postalCode is string && data.postalCode.size() >= 1 && data.postalCode.size() <= 20 &&
+      data.trackingCode is string && data.trackingCode.size() >= 4 && data.trackingCode.size() <= 32 && data.trackingCode.matches('^[A-Z0-9\\-]+$') &&
+      data.courier is string && data.courier.size() >= 2 && data.courier.size() <= 48 &&
+      data.estimatedDelivery is string && data.estimatedDelivery.size() >= 2 && data.estimatedDelivery.size() <= 40 &&
+      isValidProductId(data.primaryProductId) &&
+      isValidFinishId(data.primaryFinish) &&
+      data.itemsSummary is string && data.itemsSummary.size() >= 1 && data.itemsSummary.size() <= 240 &&
+      data.itemCount is int && data.itemCount >= 1 && data.itemCount <= 99 &&
+      data.total is int && data.total >= 1 && data.total <= 1000000 &&
+      data.paymentMethod is string && data.paymentMethod.size() <= 8 && (data.paymentMethod == 'card' || data.paymentMethod == 'cod') &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Pillar 2: Validation Blueprint for ProductTelemetry
+    function isValidProductTelemetry(data) {
+      return data.keys().hasAll([
+        'productId',
+        'stockCount',
+        'editionNumber',
+        'leadTimeDays',
+        'lastCommissionedCity',
+        'updatedByUid',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'productId',
+        'stockCount',
+        'editionNumber',
+        'leadTimeDays',
+        'lastCommissionedCity',
+        'updatedByUid',
+        'updatedAt'
+      ]) &&
+      isValidProductId(data.productId) &&
+      data.stockCount is int && data.stockCount >= 0 && data.stockCount <= 500 &&
+      data.editionNumber is int && data.editionNumber >= 1 && data.editionNumber <= 5000 &&
+      data.leadTimeDays is int && data.leadTimeDays >= 1 && data.leadTimeDays <= 60 &&
+      data.lastCommissionedCity is string && data.lastCommissionedCity.size() >= 1 && data.lastCommissionedCity.size() <= 60 &&
+      data.updatedByUid is string && data.updatedByUid.size() >= 1 && data.updatedByUid.size() <= 128 && data.updatedByUid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.updatedByUid == request.auth.uid &&
+      data.updatedAt is timestamp;
+    }
+
+    // Pillar 1: Master Gate Relational Sync Helpers
+    function isParentPlayerOwner(playerId) {
+      return exists(/databases/$(database)/documents/players/$(playerId)) &&
+        get(/databases/$(database)/documents/players/$(playerId)).data.uid == request.auth.uid;
+    }
+
+    function isParentClientOwner(clientId) {
+      return exists(/databases/$(database)/documents/clients/$(clientId)) &&
+        get(/databases/$(database)/documents/clients/$(clientId)).data.uid == request.auth.uid;
+    }
+
+    // Action Helpers for ClientProfile updates
+    function isUpdateClientDossierAction() {
+      return incoming().orderCount == existing().orderCount &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName',
+          'preferredFinish',
+          'wishlistIds',
+          'updatedAt'
+        ]);
+    }
+
+    function isRecordClientOrderAction() {
+      return incoming().orderCount == existing().orderCount + 1 &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName',
+          'preferredFinish',
+          'wishlistIds',
+          'orderCount',
+          'updatedAt'
+        ]);
+    }
+
+    // Action Helper for AtelierOrder status advancement (with Terminal State Lock & Forward-Only Step Transition)
+    function isAdvanceOrderStatusAction() {
+      return existing().status != 'delivered' &&
+        isValidOrderTransition(existing().status, incoming().status) &&
+        incoming().uid == existing().uid &&
+        incoming().orderNumber == existing().orderNumber &&
+        incoming().recipientName == existing().recipientName &&
+        incoming().destinationCity == existing().destinationCity &&
+        incoming().postalCode == existing().postalCode &&
+        incoming().courier == existing().courier &&
+        incoming().primaryProductId == existing().primaryProductId &&
+        incoming().primaryFinish == existing().primaryFinish &&
+        incoming().itemsSummary == existing().itemsSummary &&
+        incoming().itemCount == existing().itemCount &&
+        incoming().total == existing().total &&
+        incoming().paymentMethod == existing().paymentMethod &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'status',
+          'trackingCode',
+          'estimatedDelivery',
+          'updatedAt'
+        ]);
+    }
+
+    // Collection 1: /players/{playerId}
+    match /players/{playerId} {
+      allow get: if isSignedIn() && isValidId(playerId) && playerId == request.auth.uid;
+      allow list: if false;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(playerId) &&
+        playerId == request.auth.uid &&
+        isValidPlayerProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(playerId) &&
+        playerId == request.auth.uid &&
+        isValidPlayerProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().played >= existing().played &&
+        incoming().played <= existing().played + 1 &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'callsign',
+          'avatarColor',
+          'favoritePen',
+          'favoriteInk',
+          'played',
+          'won',
+          'lost',
+          'draws',
+          'streak',
+          'bestStreak',
+          'updatedAt'
+        ]);
+
+      allow delete: if false;
+
+      // Subcollection 2: /players/{playerId}/matches/{matchId}
+      match /matches/{matchId} {
+        allow get: if isSignedIn() &&
+          isValidId(playerId) &&
+          isValidId(matchId) &&
+          playerId == request.auth.uid &&
+          (resource == null || existing().uid == request.auth.uid);
+
+        allow list: if isSignedIn() &&
+          isValidId(playerId) &&
+          playerId == request.auth.uid &&
+          existing().uid == request.auth.uid;
+
+        allow create: if isVerifiedUser() &&
+          isValidId(playerId) &&
+          isValidId(matchId) &&
+          playerId == request.auth.uid &&
+          isValidMatchLog(incoming()) &&
+          incoming().createdAt == request.time &&
+          isParentPlayerOwner(playerId);
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Collection 3: /clients/{clientId}
+    match /clients/{clientId} {
+      allow get: if isSignedIn() && isValidId(clientId) && clientId == request.auth.uid;
+      allow list: if false;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(clientId) &&
+        clientId == request.auth.uid &&
+        isValidClientProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(clientId) &&
+        clientId == request.auth.uid &&
+        isValidClientProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (isUpdateClientDossierAction() || isRecordClientOrderAction());
+
+      allow delete: if false;
+
+      // Subcollection 4: /clients/{clientId}/orders/{orderId}
+      match /orders/{orderId} {
+        allow get: if isSignedIn() &&
+          isValidId(clientId) &&
+          isValidId(orderId) &&
+          clientId == request.auth.uid &&
+          (resource == null || existing().uid == request.auth.uid);
+
+        // Pillar 8: Secure List Query enforcing owner check on resource.data without get()/exists()
+        allow list: if isSignedIn() &&
+          isValidId(clientId) &&
+          clientId == request.auth.uid &&
+          existing().uid == request.auth.uid;
+
+        allow create: if isVerifiedUser() &&
+          isValidId(clientId) &&
+          isValidId(orderId) &&
+          clientId == request.auth.uid &&
+          isValidAtelierOrder(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          isParentClientOwner(clientId);
+
+        allow update: if isVerifiedUser() &&
+          isValidId(clientId) &&
+          isValidId(orderId) &&
+          clientId == request.auth.uid &&
+          isValidAtelierOrder(incoming()) &&
+          incoming().updatedAt == request.time &&
+          isAdvanceOrderStatusAction() &&
+          isParentClientOwner(clientId);
+
+        allow delete: if false;
+      }
+    }
+
+    // Collection 5: /catalog_telemetry/{productId}
+    match /catalog_telemetry/{productId} {
+      allow get: if isSignedIn() && isValidProductId(productId);
+      allow list: if false;
+
+      allow create: if isVerifiedUser() &&
+        isValidProductId(productId) &&
+        incoming().productId == productId &&
+        isValidProductTelemetry(incoming()) &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidProductId(productId) &&
+        incoming().productId == existing().productId &&
+        isValidProductTelemetry(incoming()) &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'stockCount',
+          'editionNumber',
+          'leadTimeDays',
+          'lastCommissionedCity',
+          'updatedByUid',
+          'updatedAt'
+        ]);
+
+      allow delete: if false;
+    }
+  }
+}

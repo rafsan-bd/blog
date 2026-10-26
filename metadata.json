@@ -1,0 +1,6 @@
+{
+  "name": "Desk Wars · Pen Fight",
+  "description": "Flick a pen, win the desk. Knock the other pen off a school desk and keep yours on. Play vs computer or 2 players on one device.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
